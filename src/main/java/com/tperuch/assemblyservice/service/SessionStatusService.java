@@ -12,7 +12,6 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class SessionStatusService {
-
     @Value("${spring.rabbitmq.exchange}")
     private String exchange;
     @Value("${spring.rabbitmq.queue}")

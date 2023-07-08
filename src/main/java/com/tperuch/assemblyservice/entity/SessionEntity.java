@@ -18,7 +18,7 @@ public class SessionEntity {
     private Long topicId;
     private LocalDateTime votingStart;
     private LocalDateTime votingEnd;
-    private boolean result;
+    private String result;
 
     public Long getId() {
         return id;
@@ -52,11 +52,11 @@ public class SessionEntity {
         this.votingEnd = votingEnd;
     }
 
-    public boolean isResult() {
+    public String isResult() {
         return result;
     }
 
-    public void setResult(boolean result) {
+    public void setResult(String result) {
         this.result = result;
     }
 }

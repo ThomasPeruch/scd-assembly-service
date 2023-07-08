@@ -1,6 +1,7 @@
 package com.tperuch.assemblyservice.service;
 
 import com.tperuch.assemblyservice.dto.SessionDto;
+import com.tperuch.assemblyservice.dto.SessionStatusDto;
 import com.tperuch.assemblyservice.dto.response.SessionResponseDto;
 import com.tperuch.assemblyservice.entity.SessionEntity;
 import com.tperuch.assemblyservice.repository.SessionRepository;
@@ -19,38 +20,19 @@ import java.util.Objects;
 @Service
 public class SessionService {
     private static final Long defaultSessionTime = 1L;
-    @Value("${spring.rabbitmq.exchange}")
-    private String exchange;
-    @Value("${spring.rabbitmq.queue}")
-    private String queue;
     @Autowired
     private SessionRepository sessionRepository;
     @Autowired
     private TopicService topicService;
     @Autowired
-    private RabbitTemplate rabbitTemplate;
+    private SessionStatusService statusService;
 
     public SessionResponseDto openSession(SessionDto sessionDto) {
         validateTopicForSessionOpening(sessionDto);
         SessionEntity sessionEntity = buildEntity(sessionDto);
         SessionResponseDto sessionResponseDto = buildResponseDto(sessionRepository.save(sessionEntity));
-        sendMessageToRabbitExchange(sessionResponseDto);
+        statusService.sendMessageToRabbitExchange(sessionResponseDto);
         return sessionResponseDto;
-    }
-
-    private void sendMessageToRabbitExchange(SessionResponseDto sessionResponseDto) {
-        rabbitTemplate.convertAndSend(exchange, queue, convertObjToMessage(sessionResponseDto));
-    }
-
-    private Message convertObjToMessage(SessionResponseDto sessionResponseDto) {
-        String json = convertObjToJson(sessionResponseDto);
-        return new Message(json.getBytes(), new MessageProperties());
-    }
-
-    private String convertObjToJson(SessionResponseDto sessionResponseDto) {
-        SessionResponseDto dtoToSend = new SessionResponseDto();
-        dtoToSend.setTopicId(sessionResponseDto.getTopicId());
-        return new JSONObject(dtoToSend).toString();
     }
 
     private void validateTopicForSessionOpening(SessionDto sessionDto) {

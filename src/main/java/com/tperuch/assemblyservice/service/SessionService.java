@@ -5,7 +5,12 @@ import com.tperuch.assemblyservice.dto.response.SessionResponseDto;
 import com.tperuch.assemblyservice.entity.SessionEntity;
 import com.tperuch.assemblyservice.repository.SessionRepository;
 import jakarta.persistence.EntityNotFoundException;
+import org.json.JSONObject;
+import org.springframework.amqp.core.Message;
+import org.springframework.amqp.core.MessageProperties;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -13,19 +18,39 @@ import java.util.Objects;
 
 @Service
 public class SessionService {
-
     private static final Long defaultSessionTime = 1L;
-
+    @Value("${spring.rabbitmq.exchange}")
+    private String exchange;
+    @Value("${spring.rabbitmq.queue}")
+    private String queue;
     @Autowired
     private SessionRepository sessionRepository;
-
     @Autowired
     private TopicService topicService;
+    @Autowired
+    private RabbitTemplate rabbitTemplate;
 
-    public SessionResponseDto openSession(SessionDto sessionDto){
+    public SessionResponseDto openSession(SessionDto sessionDto) {
         validateTopicForSessionOpening(sessionDto);
         SessionEntity sessionEntity = buildEntity(sessionDto);
-        return buildResponseDto(sessionRepository.save(sessionEntity));
+        SessionResponseDto sessionResponseDto = buildResponseDto(sessionRepository.save(sessionEntity));
+        sendMessageToRabbitExchange(sessionResponseDto);
+        return sessionResponseDto;
+    }
+
+    private void sendMessageToRabbitExchange(SessionResponseDto sessionResponseDto) {
+        rabbitTemplate.convertAndSend(exchange, queue, convertObjToMessage(sessionResponseDto));
+    }
+
+    private Message convertObjToMessage(SessionResponseDto sessionResponseDto) {
+        String json = convertObjToJson(sessionResponseDto);
+        return new Message(json.getBytes(), new MessageProperties());
+    }
+
+    private String convertObjToJson(SessionResponseDto sessionResponseDto) {
+        SessionResponseDto dtoToSend = new SessionResponseDto();
+        dtoToSend.setTopicId(sessionResponseDto.getTopicId());
+        return new JSONObject(dtoToSend).toString();
     }
 
     private void validateTopicForSessionOpening(SessionDto sessionDto) {
@@ -34,13 +59,13 @@ public class SessionService {
     }
 
     private void verifyIfTopicExistsOrNot(SessionDto sessionDto) {
-        if(!topicService.existsTopic(sessionDto.getTopicId())){
+        if (!topicService.existsTopic(sessionDto.getTopicId())) {
             throw new EntityNotFoundException("Não existe pauta para o codigo informado - " + sessionDto.getTopicId());
         }
     }
 
     private void isTopicAlreadyBindToASession(Long topicId) {
-        if(sessionRepository.existsByTopicId(topicId)){
+        if (sessionRepository.existsByTopicId(topicId)) {
             throw new IllegalArgumentException("Pauta ja está vinculada a uma sessão de votação, favor escolher outra");
         }
     }
@@ -64,11 +89,8 @@ public class SessionService {
     }
 
     private LocalDateTime getSessionTime(Integer sessionTime, LocalDateTime votingStartDate) {
-        if(Objects.isNull(sessionTime)){
+        if (Objects.isNull(sessionTime)) {
             return votingStartDate.plusMinutes(defaultSessionTime);
-        }
-        if(sessionTime.equals(0)){
-            throw new IllegalArgumentException("Valor zero é invalido para tempo de sessão");
         }
         return votingStartDate.plusMinutes(sessionTime.longValue());
     }

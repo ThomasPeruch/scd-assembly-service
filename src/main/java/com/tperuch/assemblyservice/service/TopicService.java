@@ -15,4 +15,8 @@ public class TopicService {
         return topicRepository.save(topicEntity);
     }
 
+    public boolean existsTopic(Long id){
+        return topicRepository.existsById(id);
+    }
+
 }

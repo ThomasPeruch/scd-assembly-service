@@ -38,20 +38,20 @@ public class RabbitMqConfig {
     }
 
     @Bean
-    public Queue voteQueue(){
+    public Queue sessionStatusQueue(){
         return new Queue(queue, true, false, false);
     }
 
     @Bean
     public Binding bindingExchangeToVoteQueue(){
-        return BindingBuilder.bind(voteQueue()).to(topicExchange()).with(queue);
+        return BindingBuilder.bind(sessionStatusQueue()).to(topicExchange()).with(queue);
     }
 
     @Bean
     public RabbitAdmin rabbitAdmin(){
         RabbitAdmin rabbitAdmin = new RabbitAdmin(connectionFactory());
         rabbitAdmin.declareExchange(topicExchange());
-        rabbitAdmin.declareQueue(voteQueue());
+        rabbitAdmin.declareQueue(sessionStatusQueue());
         rabbitAdmin.declareBinding(bindingExchangeToVoteQueue());
         return rabbitAdmin;
     }

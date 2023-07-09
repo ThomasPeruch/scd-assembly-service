@@ -68,12 +68,14 @@ public class SessionService {
 
     private void verifyIfTopicExistsOrNot(SessionDto sessionDto) {
         if (!topicService.existsTopic(sessionDto.getTopicId())) {
+            logger.error("Não existe pauta para o codigo informado - {}", sessionDto.getTopicId());
             throw new EntityNotFoundException("Não existe pauta para o codigo informado - " + sessionDto.getTopicId());
         }
     }
 
     private void isTopicAlreadyBindToASession(Long topicId) {
         if (sessionRepository.existsByTopicId(topicId)) {
+            logger.error("Pauta {} ja está vinculada a uma sessão de votação, favor escolher outra", topicId);
             throw new IllegalArgumentException("Pauta ja está vinculada a uma sessão de votação, favor escolher outra");
         }
     }

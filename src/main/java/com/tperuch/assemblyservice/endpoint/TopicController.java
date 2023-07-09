@@ -3,6 +3,7 @@ package com.tperuch.assemblyservice.endpoint;
 import com.tperuch.assemblyservice.dto.TopicDto;
 import com.tperuch.assemblyservice.dto.response.TopicResponseDto;
 import com.tperuch.assemblyservice.service.TopicService;
+import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

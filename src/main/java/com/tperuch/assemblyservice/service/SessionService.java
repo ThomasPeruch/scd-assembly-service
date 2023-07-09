@@ -6,6 +6,8 @@ import com.tperuch.assemblyservice.dto.response.SessionResponseDto;
 import com.tperuch.assemblyservice.entity.SessionEntity;
 import com.tperuch.assemblyservice.repository.SessionRepository;
 import jakarta.persistence.EntityNotFoundException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -22,6 +24,7 @@ public class SessionService {
     private TopicService topicService;
     @Autowired
     private SessionStatusService statusService;
+    Logger logger = LoggerFactory.getLogger(SessionService.class);
 
     public SessionResponseDto openSession(SessionDto sessionDto) {
         validateTopicForSessionOpening(sessionDto);
@@ -36,15 +39,19 @@ public class SessionService {
     }
 
     public SessionEntity saveSession(SessionEntity sessionEntity){
+        logger.info("Salvando sessão de votação de pauta na base de dados. ID da sessão: {} - ID da pauta: {}",
+                sessionEntity.getId(), sessionEntity.getTopicId());
         return sessionRepository.save(sessionEntity);
     }
 
     private void validateTopicForSessionOpening(SessionDto sessionDto) {
+        logger.info("Validando se a pauta pode ser aberta para votação em uma sessão");
         verifyIfTopicExistsOrNot(sessionDto);
         isTopicAlreadyBindToASession(sessionDto.getTopicId());
     }
 
     private SessionStatusDto buildStatusDto(SessionResponseDto sessionResponseDto) {
+        logger.info("Tratando dados para mensageria");
         SessionStatusDto sessionStatusDto = new SessionStatusDto();
         sessionStatusDto.setSessionId(sessionResponseDto.getId());
         sessionStatusDto.setStatus("OPEN");

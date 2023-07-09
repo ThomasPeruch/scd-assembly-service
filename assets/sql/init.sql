@@ -10,6 +10,7 @@ CREATE TABLE if not exists public.session_voting(
 	voting_start timestamp not null,
 	voting_end timestamp not null,
     result varchar(15),
+    is_finished boolean,
 	primary key (id),
 	foreign key (topic_id) references topic(id)
 );

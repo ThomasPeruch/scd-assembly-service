@@ -19,6 +19,19 @@ public class SessionEntity {
     private LocalDateTime votingStart;
     private LocalDateTime votingEnd;
     private String result;
+    private boolean isFinished;
+
+    public String getResult() {
+        return result;
+    }
+
+    public boolean isFinished() {
+        return isFinished;
+    }
+
+    public void setFinished(boolean finished) {
+        isFinished = finished;
+    }
 
     public Long getId() {
         return id;

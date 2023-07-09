@@ -19,16 +19,8 @@ public class SessionStatusService {
     @Autowired
     private RabbitTemplate rabbitTemplate;
 
-    public void sendMessageToRabbitExchange(SessionResponseDto sessionResponseDto){
-        SessionStatusDto sessionStatusDto = buildStatusDto(sessionResponseDto);
+    public void sendMessageToRabbitExchange(SessionStatusDto sessionStatusDto){
         rabbitTemplate.convertAndSend(exchange, queue, convertObjToMessage(sessionStatusDto));
-    }
-
-    private SessionStatusDto buildStatusDto(SessionResponseDto sessionResponseDto) {
-        SessionStatusDto sessionStatusDto = new SessionStatusDto();
-        sessionStatusDto.setSessionId(sessionResponseDto.getId());
-        sessionStatusDto.setStatus("OPEN");
-        return sessionStatusDto;
     }
 
     private Message convertObjToMessage(SessionStatusDto dto) {

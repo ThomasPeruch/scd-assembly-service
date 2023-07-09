@@ -6,15 +6,11 @@ import com.tperuch.assemblyservice.dto.response.SessionResponseDto;
 import com.tperuch.assemblyservice.entity.SessionEntity;
 import com.tperuch.assemblyservice.repository.SessionRepository;
 import jakarta.persistence.EntityNotFoundException;
-import org.json.JSONObject;
-import org.springframework.amqp.core.Message;
-import org.springframework.amqp.core.MessageProperties;
-import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Objects;
 
 @Service
@@ -30,14 +26,29 @@ public class SessionService {
     public SessionResponseDto openSession(SessionDto sessionDto) {
         validateTopicForSessionOpening(sessionDto);
         SessionEntity sessionEntity = buildEntity(sessionDto);
-        SessionResponseDto sessionResponseDto = buildResponseDto(sessionRepository.save(sessionEntity));
-        statusService.sendMessageToRabbitExchange(sessionResponseDto);
+        SessionResponseDto sessionResponseDto = buildResponseDto(saveSession(sessionEntity));
+        statusService.sendMessageToRabbitExchange(buildStatusDto(sessionResponseDto));
         return sessionResponseDto;
+    }
+
+    public List<SessionEntity> findExpiredSessions(){
+        return sessionRepository.findByVotingEndLesserThanNowAndResultIsNull();
+    }
+
+    public SessionEntity saveSession(SessionEntity sessionEntity){
+        return sessionRepository.save(sessionEntity);
     }
 
     private void validateTopicForSessionOpening(SessionDto sessionDto) {
         verifyIfTopicExistsOrNot(sessionDto);
         isTopicAlreadyBindToASession(sessionDto.getTopicId());
+    }
+
+    private SessionStatusDto buildStatusDto(SessionResponseDto sessionResponseDto) {
+        SessionStatusDto sessionStatusDto = new SessionStatusDto();
+        sessionStatusDto.setSessionId(sessionResponseDto.getId());
+        sessionStatusDto.setStatus("OPEN");
+        return sessionStatusDto;
     }
 
     private void verifyIfTopicExistsOrNot(SessionDto sessionDto) {

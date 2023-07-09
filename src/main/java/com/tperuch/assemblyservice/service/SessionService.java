@@ -6,6 +6,7 @@ import com.tperuch.assemblyservice.dto.response.SessionResponseDto;
 import com.tperuch.assemblyservice.entity.SessionEntity;
 import com.tperuch.assemblyservice.repository.SessionRepository;
 import jakarta.persistence.EntityNotFoundException;
+import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,13 +19,20 @@ import java.util.Objects;
 @Service
 public class SessionService {
     private static final Long defaultSessionTime = 1L;
+    Logger logger = LoggerFactory.getLogger(SessionService.class);
     @Autowired
     private SessionRepository sessionRepository;
     @Autowired
     private TopicService topicService;
     @Autowired
     private SessionStatusService statusService;
-    Logger logger = LoggerFactory.getLogger(SessionService.class);
+    @Autowired
+    private ModelMapper modelMapper;
+
+    public List<SessionResponseDto> findAllSessions(){
+        List<SessionEntity> entities = sessionRepository.findAll();
+        return entities.stream().map(this::buildResponseDto).toList();
+    }
 
     public SessionResponseDto openSession(SessionDto sessionDto) {
         validateTopicForSessionOpening(sessionDto);
@@ -34,11 +42,11 @@ public class SessionService {
         return sessionResponseDto;
     }
 
-    public List<SessionEntity> findExpiredSessions(){
+    public List<SessionEntity> findExpiredSessions() {
         return sessionRepository.findByVotingEndLesserThanNowAndResultIsNull();
     }
 
-    public SessionEntity saveSession(SessionEntity sessionEntity){
+    public SessionEntity saveSession(SessionEntity sessionEntity) {
         logger.info("Salvando sessão de votação de pauta na base de dados. ID da sessão: {} - ID da pauta: {}",
                 sessionEntity.getId(), sessionEntity.getTopicId());
         return sessionRepository.save(sessionEntity);

@@ -10,6 +10,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 
 
 @Service
@@ -25,7 +26,17 @@ public class TopicService {
         TopicEntity topicEntity = mapToEntity(topicDto);
         logger.info("Salvando pauta: {}", topicEntity);
         TopicEntity savedEntity = topicRepository.save(topicEntity);
+        return mapToTopicResponseDto(savedEntity);
+    }
+
+    private TopicResponseDto mapToTopicResponseDto(TopicEntity savedEntity) {
         return modelMapper.map(savedEntity, TopicResponseDto.class);
+    }
+
+    public List<TopicResponseDto> findAllTopics() {
+        logger.info("Buscando todas pautas");
+        List<TopicEntity> entities = topicRepository.findAll();
+        return entities.stream().map(this::mapToTopicResponseDto).toList();
     }
 
     public boolean existsTopic(Long id) {

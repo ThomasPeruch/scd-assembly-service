@@ -1,8 +1,8 @@
 package com.tperuch.assemblyservice.service;
 
+import com.google.gson.Gson;
 import com.tperuch.assemblyservice.dto.SessionStatusDto;
-import com.tperuch.assemblyservice.dto.response.SessionResponseDto;
-import org.json.JSONObject;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.amqp.core.Message;
@@ -21,6 +21,8 @@ public class SessionStatusService {
     private String queue;
     @Autowired
     private RabbitTemplate rabbitTemplate;
+    @Autowired
+    private Gson gson;
 
     public void sendMessageToRabbitExchange(SessionStatusDto sessionStatusDto){
         rabbitTemplate.convertAndSend(exchange, queue, convertObjToMessage(sessionStatusDto));
@@ -34,6 +36,6 @@ public class SessionStatusService {
     }
 
     private String convertObjToJson(SessionStatusDto dto) {
-        return new JSONObject(dto).toString();
+        return gson.toJson(dto);
     }
 }

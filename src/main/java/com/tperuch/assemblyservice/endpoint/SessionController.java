@@ -3,7 +3,6 @@ package com.tperuch.assemblyservice.endpoint;
 import com.tperuch.assemblyservice.dto.SessionDto;
 import com.tperuch.assemblyservice.dto.response.SessionResponseDto;
 import com.tperuch.assemblyservice.service.SessionService;
-import io.swagger.annotations.ApiOperation;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;

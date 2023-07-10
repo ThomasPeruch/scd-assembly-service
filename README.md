@@ -9,7 +9,7 @@ Certifique-se de ter as seguintes portas livres na sua máquina para subir a apl
 - 5432 -> banco de dados PostgreSQL
 - 5672 e 15672 -> mensageria com RabbitMq
 
-Na pasta raíz do projeto executar o comando docker compose up -d
+Na pasta raíz do projeto executar o comando docker compose up -d, esse comando criará containers com as especificações descritas no arquivo docker-compose.yml, nesse caso subirá uma instância do banco PostgreSQL e o serviço de mensageria do RabbitMq.
 
 Tecnologias Utilizadas:
 - Java 17
@@ -103,3 +103,6 @@ Response:
 ````
 - Fechar as sessões<br>
 Possui um job que executa no segundo 30 de cada minuto, verificando na tabela session se o campo end_date é de uma data que ja passou (end_date < now()), caso seja é montado um objeto e enviado para o vote-service, para o avisar que a sessão que fechou.
+
+Swagger do serviço : http://127.0.0.1:8080/swagger-ui.html (serviço deve estar rodando)
+Inteface do RabbitMq : http://127.0.0.0:15672/#/ (container com o rabbit deve estar rodando)

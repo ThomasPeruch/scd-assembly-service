@@ -21,8 +21,10 @@ public class RabbitMqConfig {
     private String password;
     @Value("${spring.rabbitmq.exchange}")
     private String exchange;
-    @Value("${spring.rabbitmq.queue}")
-    private String queue;
+    @Value("${spring.rabbitmq.session-status.queue}")
+    private String sessionStatusQueue;
+    @Value("${spring.rabbitmq.session-result.queue}")
+    private String sessionResultQueue;
 
     @Bean
     public ConnectionFactory connectionFactory(){
@@ -39,12 +41,23 @@ public class RabbitMqConfig {
 
     @Bean
     public Queue sessionStatusQueue(){
-        return new Queue(queue, true, false, false);
+        return new Queue(sessionStatusQueue, true, false, false);
     }
 
     @Bean
-    public Binding bindingExchangeToVoteQueue(){
-        return BindingBuilder.bind(sessionStatusQueue()).to(topicExchange()).with(queue);
+    public Binding bindingExchangeToSessionStatusQueue(){
+        return BindingBuilder.bind(sessionStatusQueue()).to(topicExchange()).with(sessionStatusQueue);
+    }
+
+
+    @Bean
+    public Queue sessionResultQueue(){
+        return new Queue(sessionResultQueue, true, false, false);
+    }
+
+    @Bean
+    public Binding bindingExchangeToVoteSessionResultQueue(){
+        return BindingBuilder.bind(sessionResultQueue()).to(topicExchange()).with(sessionResultQueue);
     }
 
     @Bean
@@ -52,7 +65,9 @@ public class RabbitMqConfig {
         RabbitAdmin rabbitAdmin = new RabbitAdmin(connectionFactory());
         rabbitAdmin.declareExchange(topicExchange());
         rabbitAdmin.declareQueue(sessionStatusQueue());
-        rabbitAdmin.declareBinding(bindingExchangeToVoteQueue());
+        rabbitAdmin.declareQueue(sessionResultQueue());
+        rabbitAdmin.declareBinding(bindingExchangeToSessionStatusQueue());
+        rabbitAdmin.declareBinding(bindingExchangeToVoteSessionResultQueue());
         return rabbitAdmin;
     }
 

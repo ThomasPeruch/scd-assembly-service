@@ -60,6 +60,10 @@ class SessionServiceTest {
     void shouldOpenSessionWithDefaultTime() {
         SessionDto sessionDto = getSessionDtoStub();
         sessionDto.setSessionTimeInMinutes(null);
+//        SessionEntity entityBeforeSaving = getSessionEntityStub();
+//
+//        entityBeforeSaving.setVotingStart(LocalDateTime.parse("07-07-2023 10:10:22"));
+//        entityBeforeSaving.setVotingEnd(LocalDateTime.parse("07-07-2023 10:14:22"));
 
         when(topicService.existsTopic(1L)).thenReturn(true);
         when(sessionRepository.existsByTopicId(1L)).thenReturn(false);

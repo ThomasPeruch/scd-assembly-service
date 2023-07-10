@@ -16,9 +16,12 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
 
+import static com.tperuch.assemblyservice.util.DateUtil.formatDate;
+
 @Service
 public class SessionService {
     private static final Long defaultSessionTime = 1L;
+    private static final String openSessionStatus = "OPEN";
     Logger logger = LoggerFactory.getLogger(SessionService.class);
     @Autowired
     private SessionRepository sessionRepository;
@@ -29,7 +32,7 @@ public class SessionService {
     @Autowired
     private ModelMapper modelMapper;
 
-    public List<SessionResponseDto> findAllSessions(){
+    public List<SessionResponseDto> findAllSessions() {
         List<SessionEntity> entities = sessionRepository.findAll();
         return entities.stream().map(this::buildResponseDto).toList();
     }
@@ -62,7 +65,7 @@ public class SessionService {
         logger.info("Tratando dados para mensageria");
         SessionStatusDto sessionStatusDto = new SessionStatusDto();
         sessionStatusDto.setSessionId(sessionResponseDto.getId());
-        sessionStatusDto.setStatus("OPEN");
+        sessionStatusDto.setStatus(openSessionStatus);
         return sessionStatusDto;
     }
 
@@ -84,8 +87,8 @@ public class SessionService {
         SessionResponseDto sessionResponseDto = new SessionResponseDto();
         sessionResponseDto.setId(savedEntity.getId());
         sessionResponseDto.setTopicId(savedEntity.getTopicId());
-        sessionResponseDto.setVotingStart(savedEntity.getVotingStart().toString());
-        sessionResponseDto.setVotingEnd(savedEntity.getVotingEnd().toString());
+        sessionResponseDto.setVotingStart(formatDate(savedEntity.getVotingStart()));
+        sessionResponseDto.setVotingEnd(formatDate(savedEntity.getVotingEnd()));
         return sessionResponseDto;
     }
 

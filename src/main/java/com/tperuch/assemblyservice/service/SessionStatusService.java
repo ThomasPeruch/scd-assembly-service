@@ -17,7 +17,7 @@ public class SessionStatusService {
     Logger logger = LoggerFactory.getLogger(SessionStatusService.class);
     @Value("${spring.rabbitmq.exchange}")
     private String exchange;
-    @Value("${spring.rabbitmq.queue}")
+    @Value("${spring.rabbitmq.session-status.queue}")
     private String queue;
     @Autowired
     private RabbitTemplate rabbitTemplate;

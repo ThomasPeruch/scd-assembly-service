@@ -20,6 +20,7 @@ public class SessionExpireChecker {
     private SessionService sessionService;
     @Autowired
     private SessionStatusService statusService;
+    private static final String sessionStatusClosed ="CLOSED";
     Logger logger = LoggerFactory.getLogger(SessionExpireChecker.class);
     @Scheduled(cron = "30 * * * * *")
     public void checkSessionExpire(){
@@ -45,7 +46,7 @@ public class SessionExpireChecker {
     private SessionStatusDto buildSessionStatusDto(SessionEntity session) {
         SessionStatusDto sessionStatusDto = new SessionStatusDto();
         sessionStatusDto.setSessionId(session.getId());
-        sessionStatusDto.setStatus("CLOSED");
+        sessionStatusDto.setStatus(sessionStatusClosed);
         logger.info("Dados mapeados envio de mensagem - {}",sessionStatusDto);
         return sessionStatusDto;
     }

@@ -6,6 +6,15 @@ public class SessionResponseDto {
     private Long topicId;
     private String votingStart;
     private String votingEnd;
+    private boolean isFinished;
+
+    public boolean isFinished() {
+        return isFinished;
+    }
+
+    public void setFinished(boolean finished) {
+        isFinished = finished;
+    }
 
     public Long getId() {
         return id;

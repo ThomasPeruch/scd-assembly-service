@@ -89,6 +89,7 @@ public class SessionService {
         sessionResponseDto.setTopicId(savedEntity.getTopicId());
         sessionResponseDto.setVotingStart(formatDate(savedEntity.getVotingStart()));
         sessionResponseDto.setVotingEnd(formatDate(savedEntity.getVotingEnd()));
+        sessionResponseDto.setFinished(savedEntity.isFinished());
         return sessionResponseDto;
     }
 

@@ -22,7 +22,7 @@ public class SessionExpireChecker {
     private SessionStatusService statusService;
     private static final String sessionStatusClosed ="CLOSED";
     Logger logger = LoggerFactory.getLogger(SessionExpireChecker.class);
-    @Scheduled(cron = "30 * * * * *")
+    @Scheduled(cron = "10 * * * * *")
     public void checkSessionExpire(){
         logger.info("iniciando job para verificar se há sessões expiradas, ou seja, sessões que devem ser fechadas e envia-las como mensagem");
         List<SessionEntity> sessions = sessionService.findExpiredSessions();

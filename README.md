@@ -63,7 +63,7 @@ Response :
 ````
 <h3>SESSÕES:</h3>
 
-- Abre uma sessão de votação:<br>
+- Abre uma sessão de votação: <br>
 Request : http://localhost:8080/session POST
 ````
 {

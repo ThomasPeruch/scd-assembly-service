@@ -6,7 +6,7 @@ CREATE TABLE if not exists public.topic (
 
 CREATE TABLE if not exists public.session_voting(
 	id bigserial not null,
-	topic_id integer not null,
+	topic_id bigserial not null,
 	voting_start timestamp not null,
 	voting_end timestamp not null,
     is_finished boolean,
